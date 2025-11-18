@@ -12,7 +12,8 @@
     "@marsidev/react-turnstile": "^1.3.1",
     "next": "^15",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "resend": "^6.4.2"
   },
   "devDependencies": {
     "@types/node": "^20",

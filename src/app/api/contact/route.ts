@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface ContactFormData {
   name: string;
@@ -101,26 +104,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Send email using your preferred service
-    // Example services: Resend, SendGrid, Nodemailer
-    // For now, just log the data
-    console.log("Contact form submission:", {
-      name: body.name,
-      email: body.email,
-      subject: body.subject,
-      message: body.message,
-      timestamp: new Date().toISOString(),
-    });
+    // Send email using Resend
+    try {
+      await resend.emails.send({
+        from: process.env.FROM_EMAIL || "noreply@cybco.com",
+        to: process.env.CONTACT_EMAIL || "mike@cybco.com",
+        subject: `Contact Form: ${body.subject}`,
+        html: `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${body.name}</p>
+          <p><strong>Email:</strong> ${body.email}</p>
+          <p><strong>Subject:</strong> ${body.subject}</p>
+          <hr />
+          <p><strong>Message:</strong></p>
+          <p>${body.message.replace(/\n/g, '<br>')}</p>
+          <hr />
+          <p style="color: #666; font-size: 12px;">
+            Submitted at: ${new Date().toLocaleString()}
+          </p>
+        `,
+        reply_to: body.email,
+      });
 
-    // In production, you would send the email here:
-    /*
-    await sendEmail({
-      to: process.env.CONTACT_EMAIL,
-      from: process.env.FROM_EMAIL,
-      subject: `Contact Form: ${body.subject}`,
-      text: `From: ${body.name} (${body.email})\n\n${body.message}`,
-    });
-    */
+      console.log("Email sent successfully to:", process.env.CONTACT_EMAIL);
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+      return NextResponse.json(
+        { message: "Failed to send email. Please try again later." },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { message: "Message sent successfully" },
