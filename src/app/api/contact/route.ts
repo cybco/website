@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
             Submitted at: ${new Date().toLocaleString()}
           </p>
         `,
-        reply_to: body.email,
+        replyTo: body.email,
       });
 
       console.log("Email sent successfully to:", process.env.CONTACT_EMAIL);
