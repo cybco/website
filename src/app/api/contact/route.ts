@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from "nodemailer";
 
 interface ContactFormData {
   name: string;
@@ -104,11 +102,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send email using Resend
+    // Send email using Gmail SMTP
     try {
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL || "noreply@cybco.com",
+      // Create transporter
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      });
+
+      // Send email
+      await transporter.sendMail({
+        from: `"${process.env.GMAIL_USER || 'CYBERNETICS CORPORATION'}" <${process.env.GMAIL_USER}>`,
         to: process.env.CONTACT_EMAIL || "mike@cybco.com",
+        replyTo: body.email,
         subject: `Contact Form: ${body.subject}`,
         html: `
           <h2>New Contact Form Submission</h2>
@@ -123,7 +134,6 @@ export async function POST(request: NextRequest) {
             Submitted at: ${new Date().toLocaleString()}
           </p>
         `,
-        replyTo: body.email,
       });
 
       console.log("Email sent successfully to:", process.env.CONTACT_EMAIL);
