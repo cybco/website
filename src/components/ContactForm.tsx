@@ -1,9 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function ContactForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -43,9 +45,7 @@ export default function ContactForm() {
         throw new Error(data.message || "Something went wrong");
       }
 
-      setStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setTurnstileToken("");
+      router.push("/thank-you");
     } catch (error) {
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : "Failed to send message");
