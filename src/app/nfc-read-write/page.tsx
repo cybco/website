@@ -12,7 +12,7 @@ export default function NFCReadWrite() {
 
             <section>
               <h2 className="text-2xl font-bold mb-3">Overview</h2>
-              <p>NFC Read & Write ("the App") is developed by Cybco and is designed to read and write data to NFC cards. This privacy policy explains how we handle your information.</p>
+              <p>NFC Read & Write (&quot;the App&quot;) is developed by Cybco and is designed to read and write data to NFC cards. This privacy policy explains how we handle your information.</p>
             </section>
 
             <section>
